@@ -97,3 +97,5 @@ main{margin:0;padding:0 17px 24px;max-width:none}
 .demo-footnote{display:block;font-size:8px;line-height:1.8}.demo-footnote span{display:block;margin-top:5px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.customer-page-link{font-size:10px;text-decoration:none;color:#cdb782;border:1px solid #494c36;padding:9px 12px;border-radius:5px}@media(max-width:760px){.customer-page-link{font-size:8px;padding:7px}.topbar-right{gap:8px}.breadcrumb{display:none}}

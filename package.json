@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "test": "node tests.cjs"
+    "test": "node tests.cjs && node booking-tests.cjs"
   },
   "devDependencies": {
     "jsdom": "^27.0.0"

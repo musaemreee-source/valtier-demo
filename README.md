@@ -26,3 +26,7 @@ Eski valtier_demo_v1 verileri silinmez. İlk yeni kayıt işleminde yeni yapı v
 Node.js 22+ ile npm install ve npm test. Testler jsdom üzerinde açılış, 10 koltuk, randevu çakışması, uçtan uca işlem, indirim, tekrar ödeme, CRM, dolu personel, stok tüketimi/yetersizliği, iade, simülasyon izolasyonu, 12 ekran, yeniden yükleme ve eski veri aktarımını kapsar. Görsel tarayıcı testi yerine geçmez.
 
 GitHub Pages mevcut main / kök klasör ayarıyla çalışır. Node paketleri sadece test içindir. Üretimde dış CDN bağımlılığı yoktur.
+
+## Müşteri randevu talebi
+
+booking.html müşteriye açık dört adımlı talep sayfasıdır. Çoklu hizmet, berber tercihi, Türkiye saatine göre ileri tarih/saat, iletişim bilgileri ve son kontrol içerir. Son bağlantı salon WhatsApp numarasına hazırlanmış metni açar; kullanıcı mesajı kendisi gönderir. Randevu veya canlı müsaitlik kaydı oluşturmaz; salon onayı gerekir. Kişisel bilgiler localStorage alanına yazılmaz. Hizmetler ve tanıtım fiyatları booking.js içinde yayımlanan sabit listedir; yönetim demosundaki yerel değişiklikler bu sayfaya aktarılmaz. Güncel fiyat salonca teyit edilir.

@@ -270,3 +270,5 @@ render=function(){
 };
 const workflowTab=tab;tab=function(id){workflowTab(id);$("currentPage").textContent=navLabels[id]||id;document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-current",b.id==="n-"+id?"page":"false"));};
 render();tab("home");
+
+document.querySelector(".topbar-right").insertAdjacentHTML("afterbegin", '<a class="customer-page-link" href="./booking.html" target="_blank" rel="noopener noreferrer">Müşteri randevu sayfası ↗</a>');

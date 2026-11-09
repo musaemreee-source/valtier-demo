@@ -1,0 +1,26 @@
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+let JSDOM;try{({JSDOM}=require('jsdom'));}catch{({JSDOM}=require('../test-tools/node_modules/jsdom'));}
+const dom=new JSDOM(fs.readFileSync(__dirname+'/booking.html','utf8'),{url:'https://example.test/booking.html',runScripts:'dangerously'});
+const w=dom.window,d=w.document,get=id=>d.getElementById(id);
+w.eval(fs.readFileSync(__dirname+'/booking.js','utf8'));
+const submit=()=>get('bookingForm').dispatchEvent(new w.Event('submit',{cancelable:true}));
+const step=()=>[...d.querySelectorAll('.step')].findIndex(x=>!x.hidden);
+assert.equal(d.querySelectorAll('.service-choice').length,13);
+submit();assert.equal(step(),0);assert.match(get('formError').textContent,/hizmet/);
+d.querySelectorAll('.service-choice input')[0].click();d.querySelectorAll('.service-choice input')[1].click();
+assert.match(get('priceTotal').textContent,/750/);assert.equal(get('durationTotal').textContent,'50 dk');
+submit();assert.equal(step(),1);submit();assert.equal(step(),1);
+get('day').value='2020-01-01';get('time').value='12:00';submit();assert.equal(step(),1);
+get('day').value='2030-01-01';get('time').value='14:30';get('barber').value='Hakan Çalışır';submit();assert.equal(step(),2);
+submit();assert.equal(step(),2);get('guestName').value='Test Müşteri';get('guestPhone').value='abc';submit();assert.equal(step(),2);
+get('guestPhone').value='+90 536 123 45 67';get('guestNote').value='<img src=x onerror=alert(1)>';submit();assert.equal(step(),3);
+const url=new URL(get('sendWhatsApp').href),message=url.searchParams.get('text');
+assert.equal(url.hostname,'wa.me');assert.equal(url.pathname,'/905367302596');assert.match(message,/Test Müşteri/);assert.match(message,/Saç Kesimi, Sakal Tıraşı/);assert.match(message,/14:30/);assert.match(message,/Hakan Çalışır/);assert.match(message,/salon onayıyla/);
+assert.equal(get('review').querySelector('img'),null);assert.match(get('review').textContent,/<img/);
+assert.equal(w.localStorage.length,0);
+get('backButton').click();assert.equal(step(),2);assert.equal(get('guestName').value,'Test Müşteri');
+get('backButton').click();get('backButton').click();d.querySelectorAll('.service-choice input')[1].click();submit();submit();submit();
+assert.equal(step(),3);assert.doesNotMatch(new URL(get('sendWhatsApp').href).searchParams.get('text'),/Sakal Tıraşı/);
+assert.equal(get('nextButton').hidden,true);
+dom.window.close();console.log('PASS: 13 services, multiple selection totals, required fields, past-date rejection, phone validation, 4 steps, encoded WhatsApp request, escaped review, back/edit, no local storage. No message sent.');
