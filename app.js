@@ -216,3 +216,57 @@ render=function(){
 };
 window.addEventListener("storage",e=>{if(e.key===v2key) {loadError="Başka sekmede kayıt değişti. Çakışmayı önlemek için bu sayfayı yenileyin.";notice(loadError);}});
 syncCatalog();render();
+
+/* Presentation layer: preserve all workflow and storage functions above. */
+const iconPaths={
+home:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+seats:'<path d="M6 11V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6M4 9v7h16V9M12 16v5m-5 0h10"/>',
+booking:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h3"/>',
+reception:'<path d="M3 18h18M5 16a7 7 0 0 1 14 0M12 9V6m-2 0h4"/>',
+barber:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="m8 8 12 12M8 16 20 4"/>',
+cash:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20m-15 5h4"/>',
+crm:'<circle cx="9" cy="7" r="4"/><path d="M2 21v-3a7 7 0 0 1 14 0v3m1-18a4 4 0 0 1 0 8m2 4a6 6 0 0 1 3 6"/>',
+catalog:'<path d="m12 3 3 6 6 3-6 3-3 6-3-6-6-3 6-3z"/>',
+stock:'<path d="m3 7 9-4 9 4v10l-9 4-9-4zm0 0 9 4 9-4m-9 4v10m-5-16 10 4"/>',
+staff:'<circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3"/>',
+reports:'<path d="M4 3v18h17M9 16v-5m5 5V6m5 10v-8"/>',
+settings:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/>'};
+function lineIcon(id){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+iconPaths[id]+'</svg>';}
+const navLabels={home:"Genel bakış",seats:"Salon",booking:"Randevular",reception:"Resepsiyon",barber:"Berber",cash:"Kasa",crm:"Müşteriler",catalog:"Hizmetler",stock:"Stok",staff:"Personel",reports:"Raporlar",settings:"Demo ve yedek"};
+document.querySelector("header").innerHTML='<div class="brand-symbol">V<span>◆</span></div><div class="brand-type"><div class="logo">VALTIER</div><div class="subtitle">MEN’S GROOMING HOUSE</div></div>';
+for(const [id,label] of Object.entries(navLabels))$("n-"+id).innerHTML=lineIcon(id)+'<span>'+label+'</span>';
+document.querySelector("nav").insertAdjacentHTML("afterbegin",'<div class="nav-label">ÇALIŞMA ALANI</div>');
+document.querySelector("nav").insertAdjacentHTML("beforeend",'<div class="sidebar-footer"><span class="salon-avatar">V</span><div><b>VALTIER Salon</b><small>Hakan & Özkan Çalışır</small></div></div>');
+const topbar=document.createElement("div");topbar.className="workspace-topbar";topbar.innerHTML='<div class="breadcrumb">ÇALIŞMA ALANI <span>/</span> <b id="currentPage">Genel bakış</b></div><div class="topbar-right"><span class="demo-pill"><i></i> Yerel demo</span><span class="profile-avatar">V</span></div>';
+document.querySelector("main").prepend(topbar);
+$("home").innerHTML=`
+<div class="page-intro"><div><div class="eyebrow">SALON YÖNETİMİ</div><h1>Her detay kontrolünüzde.</h1><p>İyi bir gün, iyi organize edilmiş bir salonla başlar.</p></div><span class="date-label" id="todayLabel"></span></div>
+<div class="welcome-panel">
+ <div class="welcome-copy"><span class="hero-kicker"><span></span> VALTIER · MEN’S GROOMING HOUSE</span><h2>Ustalığa odaklanın.<br><em>Gerisini düzenleyelim.</em></h2><p>Randevudan son dokunuşa kadar,<br>salonunuzun tüm akışı tek yerde.</p><div class="hero-actions"><button class="primary" onclick="tab('booking')">＋ Yeni randevu <span>↗</span></button><button class="quiet-button" onclick="tab('seats')">Salonu görüntüle →</button></div></div>
+ <div class="hero-art" aria-hidden="true"><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><span class="art-top">THE ART OF GROOMING</span><div class="monogram">V<span>◆</span></div><span class="art-bottom">PRECISION · CRAFT · CHARACTER</span><span class="art-corner">V / 01</span></div>
+</div>
+<div class="section-heading"><h3>Salonun nabzı</h3><span class="muted">Mevcut kayıtların özeti</span></div>
+<div class="metrics-grid">
+ ${[["Randevular","s1","booking","Planlanan ziyaretler"],["İşlemde","s2","barber","Devam eden hizmetler"],["Bekleyen","s3","reception","Karşılanan müşteriler"],["Boş koltuk","s4","seats","Toplam 10 koltuk"],["Net demo tahsilatı","s5","cash","Tüm kayıtlar"]].map(([label,id,icon,note])=>'<div class="metric"><div class="metric-top"><small>'+label+'</small>'+lineIcon(icon)+'</div><div class="stat" id="'+id+'">0</div><span class="metric-note">'+note+'</span></div>').join("")}
+</div>
+<div class="dashboard-columns">
+ <div class="dashboard-panel"><div class="section-heading"><div><div class="eyebrow">SALON PLANI</div><h3>Koltuğunuz hazır.</h3></div><button class="text-button" onclick="tab('seats')">Tüm salon ↗</button></div><div id="miniSeats" class="mini-seats"></div><div class="seat-legend"><span><i></i> Müsait</span><span><i class="occupied"></i> İşlemde</span></div></div>
+ <div class="dashboard-panel recent-panel"><div class="section-heading"><div><div class="eyebrow">AKIŞ</div><h3>Son işlemler</h3></div><span class="activity-dot"></span></div><div id="recent"></div></div>
+</div>
+<div class="bottom-cards">
+ <button class="quick-card" onclick="tab('reception')">${lineIcon("reception")}<span><b>Bir karşılama ile başlar.</b><small>Resepsiyon ve bekleyen müşteriler</small></span><i>↗</i></button>
+ <button class="quick-card" onclick="demo()">${lineIcon("catalog")}<span><b>VALTIER’i deneyimleyin.</b><small>Örnek salon simülasyonunu başlat</small></span><i>↗</i></button>
+ <a class="quick-card" href="https://wa.me/905367302596" target="_blank" rel="noopener noreferrer">${lineIcon("crm")}<span><b>Salon WhatsApp</b><small>+90 536 730 25 96</small></span><i>↗</i></a>
+</div>
+<p class="demo-footnote">DEMO ALANI <span>Veriler bu cihazda saklanır. Gerçek ödeme, otomatik mesajlaşma ve cihazlar arası eşitleme bağlı değildir.</span></p>
+`;
+const workflowRender=render;
+render=function(){
+ workflowRender();
+ $("todayLabel").textContent=new Intl.DateTimeFormat("tr-TR",{day:"numeric",month:"long",year:"numeric",timeZone:"Europe/Istanbul"}).format(new Date());
+ $("miniSeats").innerHTML=Array.from({length:10},(_,i)=>{const busy=db.jobs.some(j=>j.chair===i&&j.status==="active");return '<button class="mini-seat '+(busy?"occupied":"")+'" onclick="tab(\'seats\')" aria-label="Koltuk '+(i+1)+' · '+(busy?"İşlemde":"Müsait")+'">'+lineIcon("seats")+'<span>'+String(i+1).padStart(2,"0")+'</span></button>';}).join("");
+ if(!db.jobs.length)$("recent").innerHTML='<div class="empty-state">'+lineIcon("booking")+'<b>Yeni bir güne hazır.</b><p>İlk randevunuzu oluşturduğunuzda<br>salon hareketleri burada görünecek.</p><button class="text-button" onclick="tab(\'booking\')">İlk randevuyu oluştur →</button></div>';
+ document.querySelector(".demo-pill").innerHTML='<i></i> '+(simulation?"Simülasyon":"Yerel demo");
+};
+const workflowTab=tab;tab=function(id){workflowTab(id);$("currentPage").textContent=navLabels[id]||id;document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-current",b.id==="n-"+id?"page":"false"));};
+render();tab("home");
