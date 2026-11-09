@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101113">
+<title>VALTIER | Men's Grooming House</title>
+<style>
+:root{
+ --bg:#101113;--card:#1d1e21;--gold:#c6a46a;
+ --text:#f5f1e8;--muted:#a5a19b;--line:#34312d
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,sans-serif}
+header{padding:24px 18px;text-align:center;
+ background:linear-gradient(135deg,#22201c,#101113);
+ border-bottom:1px solid var(--gold)}
+.logo{font-family:Georgia,serif;font-size:38px;
+ letter-spacing:7px;color:var(--gold)}
+.subtitle{font-size:10px;letter-spacing:3px;margin-top:8px}
+.demo{font-size:11px;color:#e2bf83;margin-top:12px}
+nav{display:flex;gap:7px;overflow-x:auto;padding:12px;
+ position:sticky;top:0;background:#101113;z-index:5}
+button,input,select{font:inherit}
+button{background:#292724;color:var(--text);
+ border:1px solid #635438;border-radius:10px;
+ padding:12px;cursor:pointer}
+button.active,.primary{background:var(--gold);
+ color:#171717;font-weight:bold}
+nav button{white-space:nowrap;font-size:12px}
+main{max-width:950px;margin:auto;padding:16px}
+h2{font-family:Georgia,serif;color:var(--gold)}
+.card{background:var(--card);border:1px solid var(--line);
+ border-radius:15px;padding:16px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{font-size:25px;color:var(--gold);font-weight:bold}
+small,.muted{color:var(--muted)}
+.seat{min-height:106px;text-align:center}
+.seat strong{display:block;font-size:20px;color:var(--gold)}
+.seat span{display:block;font-size:12px;margin:9px 0}
+.row{display:flex;justify-content:space-between;align-items:center;
+ gap:10px;border-bottom:1px solid var(--line);
+ padding:13px 0;flex-wrap:wrap}
+.row:last-child{border:0}
+.actions{display:flex;flex-wrap:wrap;gap:6px}
+.actions button{font-size:12px;padding:9px}
+input,select{background:#111;color:white;border:1px solid #655637;
+ border-radius:9px;padding:13px;width:100%;margin:6px 0 12px}
+label{font-size:12px;color:var(--gold)}
+.full{width:100%;margin-top:8px}
+section{display:none}
+section.show{display:block}
+.green{color:#74d49e}.yellow{color:#e4bd6b}
+.red{color:#ee8585}
+@media(min-width:700px){
+ .grid{grid-template-columns:repeat(5,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">VALTIER</div>
+ <div class="subtitle">MEN'S GROOMING HOUSE</div>
+ <div class="demo">ÖZEL SALON YÖNETİMİ • DEMO SÜRÜM</div>
+</header>
+
+<nav>
+ <button onclick="tab('home')" id="n-home">👑 Yönetim</button>
+ <button onclick="tab('seats')" id="n-seats">🪑 Salon</button>
+ <button onclick="tab('booking')" id="n-booking">📅 Randevu</button>
+ <button onclick="tab('reception')" id="n-reception">🛎️ Resepsiyon</button>
+ <button onclick="tab('barber')" id="n-barber">✂️ Berber</button>
+ <button onclick="tab('cash')" id="n-cash">💰 Kasa</button>
+</nav>
+
+<main>
+<section id="home">
+ <h2>Yönetim Merkezi</h2>
+ <div class="grid">
+  <div class="card"><small>Randevular</small><div class="stat" id="s1">0</div></div>
+  <div class="card"><small>Aktif işlem</small><div class="stat" id="s2">0</div></div>
+  <div class="card"><small>Bekleyen</small><div class="stat" id="s3">0</div></div>
+  <div class="card"><small>Boş koltuk</small><div class="stat" id="s4">10</div></div>
+  <div class="card"><small>Demo ciro</small><div class="stat" id="s5">0 ₺</div></div>
+ </div>
+ <div class="card">
+  <h3>VALTIER'e Hoş Geldiniz</h3>
+  <p>Hakan ve Özkan Çalışır için hazırlanan özel berber salonu yönetim sistemi.</p>
+  <p class="muted">10 koltuk • Resepsiyon • Berber • Kasa • Müşteri</p>
+  <button class="primary full" onclick="tab('booking')">+ Yeni Randevu Oluştur</button>
+  <button class="full" onclick="demo()">🧪 Örnek Salon Simülasyonunu Başlat</button>
+ </div>
+ <div class="card">
+  <h3>Son İşlemler</h3>
+  <div id="recent"></div>
+ </div>
+</section>
+
+<section id="seats">
+ <h2>10 Koltuklu Canlı Salon</h2>
+ <div class="grid" id="seatgrid"></div>
+</section>
+
+<section id="booking">
+ <h2>Yeni Randevu</h2>
+ <div class="card">
+  <label>Müşterinin adı</label>
+  <input id="customer" placeholder="Adı soyadı">
+  <label>Telefon</label>
+  <input id="phone" type="tel" placeholder="05XXXXXXXXX">
+  <label>Hizmet</label>
+  <select id="service"></select>
+  <label>Berber / Koltuk</label>
+  <select id="worker"></select>
+  <label>Randevu tarihi ve saati</label>
+  <input id="date" type="datetime-local">
+  <button class="primary full" onclick="addBooking()">Randevuyu Kaydet</button>
+ </div>
+ <div class="card">
+  <h3>Randevu Listesi</h3>
+  <div id="booklist"></div>
+ </div>
+</section>
+
+<section id="reception">
+ <h2>Resepsiyon</h2>
+ <p class="muted">Müşteri geldiğinde karşıla butonuna basın.</p>
+ <div class="card" id="receplist"></div>
+</section>
+
+<section id="barber">
+ <h2>Berber Paneli</h2>
+ <p class="muted">Müşteriyi al, işlemi başlat ve tamamla.</p>
+ <div class="card" id="barberlist"></div>
+</section>
+
+<section id="cash">
+ <h2>Kasa ve Tahsilat</h2>
+ <div class="card">
+  <small>Toplam demo tahsilatı</small>
+  <div class="stat" id="cashsum">0 ₺</div>
+ </div>
+ <div class="card">
+  <h3>Ödeme Bekleyenler</h3>
+  <div id="cashlist"></div>
+ </div>
+ <div class="card">
+  <h3>Ödeme Geçmişi</h3>
+  <div id="paidlist"></div>
+ </div>
+</section>
+</main>
+
+<script>
+const names=[
+ "Hakan Çalışır","Özkan Çalışır","Berber 3",
+ "Berber 4","Berber 5","Berber 6","Berber 7",
+ "Berber 8","Berber 9","Berber 10"
+];
+const services=[
+ ["Saç Kesimi",500,30],
+ ["Sakal Tıraşı",250,20],
+ ["Saç + Sakal",700,50],
+ ["Saç Yıkama",150,15],
+ ["Saç Boyama",900,60],
+ ["Cilt Bakımı",650,45],
+ ["Kaş Düzenleme",200,15],
+ ["Burun/Kulak Tüy Temizliği",200,15],
+ ["Ağda Bakımı",350,30],
+ ["Manikür",500,40],
+ ["Pedikür",650,50],
+ ["Damat Tıraşı",1800,90],
+ ["VIP Bakım Paketi",2500,120]
+];
+const key="valtier_demo_v1";
+let db;
+try{
+ db=JSON.parse(localStorage.getItem(key))||{jobs:[],next:1};
+}catch(e){db={jobs:[],next:1}}
+if(!Array.isArray(db.jobs))db={jobs:[],next:1};
+const $=id=>document.getElementById(id);
+const money=n=>Number(n).toLocaleString("tr-TR")+" ₺";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+function save(){localStorage.setItem(key,JSON.stringify(db));render()}
+function tab(t){
+ document.querySelectorAll("section").forEach(x=>x.classList.remove("show"));
+ document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+ $(t).classList.add("show");$("n-"+t).classList.add("active");
+ render();
+}
+function item(name,detail,buttons=""){
+ return `<div class="row"><div><b>${esc(name)}</b><br>
+ <small>${esc(detail)}</small></div>
+ <div class="actions">${buttons}</div></div>`;
+}
+function btn(label,action){
+ return `<button onclick="${action}">${label}</button>`;
+}
+function jobStatus(s){
+ return ({
+ booked:"Randevulu",arrived:"Salonda",
+ active:"İşlemde",finished:"Kasada",
+ paid:"Ödendi",cancelled:"İptal"
+ })[s]||s;
+}
+function createJob(name,phone,service,worker,date){
+ const p=services[service];
+ db.jobs.push({
+ id:db.next++,name,phone,service,worker,date,
+ price:p[1],duration:p[2],status:"booked"
+ });
+ save();
+}
+function addBooking(){
+ const name=$("customer").value.trim();
+ const phone=$("phone").value.trim();
+ const service=Number($("service").value);
+ const worker=Number($("worker").value);
+ const date=$("date").value;
+ if(!name||!date){alert("Müşteri adı ve tarih gir.");return}
+ const start=new Date(date).getTime();
+ const end=start+services[service][2]*60000;
+ const conflict=db.jobs.some(j=>{
+  if(j.worker!==worker||j.status==="cancelled")return false;
+  const a=new Date(j.date).getTime();
+  const b=a+j.duration*60000;
+  return start<b&&end>a;
+ });
+ if(conflict){alert("Bu berberin seçilen saatte başka randevusu var.");return}
+ createJob(name,phone,service,worker,date);
+ $("customer").value="";$("phone").value="";
+ alert("Randevu oluşturuldu!");
+ tab("reception");
+}
+function change(id,status){
+ const j=db.jobs.find(x=>x.id===id);
+ if(!j)return;
+ const allowed={
+ booked:["arrived","cancelled"],
+ arrived:["active","cancelled"],
+ active:["finished"],
+ finished:["paid"]
+ };
+ if(!(allowed[j.status]||[]).includes(status))return;
+ if(status==="active"&&db.jobs.some(x=>
+ x.id!==id&&x.worker===j.worker&&x.status==="active")){
+  alert("Berber şu anda başka bir işlemde.");return;
+ }
+ j.status=status;
+ save();
+}
+function pay(id){
+ const j=db.jobs.find(x=>x.id===id);
+ if(!j||j.status!=="finished")return;
+ const method=prompt("Ödeme şekli: Nakit / Kart / Havale","Kart");
+ if(method===null)return;
+ if(!["nakit","kart","havale"].includes(method.trim().toLowerCase())){
+  alert("Nakit, Kart veya Havale seç.");return;
+ }
+ j.method=method.trim();
+ change(id,"paid");
+}
+function demo(){
+ if(!confirm("Örnek müşteri kayıtları eklensin mi?"))return;
+ const people=["Ahmet Yılmaz","Murat Demir","Serkan Kaya",
+ "Ömer Arslan","Mustafa Çelik","Can Yıldız"];
+ const now=new Date();
+ people.forEach((name,i)=>{
+  const d=new Date(now.getTime()+i*3600000);
+  createJob(name,"",i%services.length,i,
+   new Date(d.getTime()-d.getTimezoneOffset()*60000)
+   .toISOString().slice(0,16));
+ });
+ tab("seats");
+}
+function render(){
+ const jobs=db.jobs;
+ const active=jobs.filter(x=>x.status==="active");
+ const waiting=jobs.filter(x=>x.status==="arrived");
+ const paid=jobs.filter(x=>x.status==="paid");
+ const total=paid.reduce((a,x)=>a+x.price,0);
+ $("s1").textContent=jobs.filter(x=>x.status!=="cancelled").length;
+ $("s2").textContent=active.length;
+ $("s3").textContent=waiting.length;
+ $("s4").textContent=10-new Set(active.map(x=>x.worker)).size;
+ $("s5").textContent=money(total);
+ $("cashsum").textContent=money(total);
+ $("recent").innerHTML=jobs.slice(-5).reverse()
+ .map(j=>item(j.name,services[j.service][0]+" • "+jobStatus(j.status))).join("")
+ ||"<p>Henüz işlem yok.</p>";
+ $("seatgrid").innerHTML=names.map((n,i)=>{
+  const j=active.find(x=>x.worker===i);
+  const w=waiting.find(x=>x.worker===i);
+  const status=j?"🔴 İşlemde":w?"🟡 Müşteri bekliyor":"🟢 Müsait";
+  return `<div class="card seat"><strong>${i+1}</strong>
+   <small>${esc(n)}</small><span>${status}</span>
+   ${j?"<small>"+esc(j.name)+"</small>":""}</div>`;
+ }).join("");
+ const detail=j=>`${names[j.worker]} • ${services[j.service][0]}
+ • ${money(j.price)} • ${j.date.replace("T"," ")}`;
+ $("booklist").innerHTML=jobs.filter(x=>x.status!=="cancelled")
+ .map(j=>item(j.name,detail(j)+" • "+jobStatus(j.status),
+ j.status==="booked"?btn("İptal",`change(${j.id},'cancelled')`):"")).join("")
+ ||"Henüz randevu yok.";
+ $("receplist").innerHTML=jobs.filter(x=>x.status==="booked")
+ .map(j=>item(j.name,detail(j),btn("✅ Müşteri Geldi",
+ `change(${j.id},'arrived')`))).join("")
+ ||"Karşılanacak müşteri yok.";
+ $("barberlist").innerHTML=jobs.filter(x=>
+ ["arrived","active"].includes(x.status))
+ .map(j=>item(j.name,detail(j),
+ j.status==="arrived"?
+ btn("✂️ Başlat",`change(${j.id},'active')`):
+ btn("✅ Tamamla",`change(${j.id},'finished')`))).join("")
+ ||"Aktif müşteri yok.";
+ $("cashlist").innerHTML=jobs.filter(x=>x.status==="finished")
+ .map(j=>item(j.name,detail(j),
+ btn("💰 Tahsil Et",`pay(${j.id})`))).join("")
+ ||"Ödeme bekleyen müşteri yok.";
+ $("paidlist").innerHTML=paid.map(j=>
+ item(j.name,money(j.price)+" • "+j.method)).join("")
+ ||"Henüz tahsilat yok.";
+}
+$("service").innerHTML=services.map((s,i)=>
+ `<option value="${i}">${esc(s[0])} - ${money(s[1])} (${s[2]} dk)</option>`).join("");
+$("worker").innerHTML=names.map((n,i)=>
+ `<option value="${i}">${esc(n)} - Koltuk ${i+1}</option>`).join("");
+const now=new Date();
+$("date").value=new Date(now.getTime()-now.getTimezoneOffset()*60000)
+ .toISOString().slice(0,16);
+tab("home");
+</script>
+</body>
+</html>
